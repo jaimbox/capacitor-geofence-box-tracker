@@ -142,7 +142,13 @@ class GeofenceManager: NSObject, UNUserNotificationCenterDelegate {
      - enter: A Boolean value indicating whether the user entered(true) or left(false) the region.
      */
     
-    func notification() {
+    private func handleEvent(forRegion region: CLRegion, enter: Bool) -> String {
+        let identifer = region.identifier
+        
+        return identifer
+    }
+    
+    func notification(forRegion region: CLRegion, enter: Bool) {
         let mathContent = UNMutableNotificationContent()
         mathContent.title = "Math Quiz!"
         mathContent.subtitle = "Do you remember high school algebra?"
@@ -165,6 +171,7 @@ class GeofenceManager: NSObject, UNUserNotificationCenterDelegate {
                 (granted, error) in
                 guard granted else{return}
         }
+        return true
     }
 }
 
@@ -196,25 +203,16 @@ extension GeofenceManager: CLLocationManagerDelegate {
         print("Location Manager failed with the following error: \(error).")
     }
     
-    // Temporarily removed to see if the 'didDetermineState' function fulfills this need.
-    //    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-    //        if region is CLCircularRegion {
-    //            handleEvent(forRegion: region, enter: true)
-    //        }
-    //    }
-    
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         if region is CLCircularRegion {
-            // handleEvent(forRegion: region, enter: false)
-            notification()
+            handleEvent(forRegion: region, enter: false)
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
         switch state {
         case CLRegionState.inside:
-            notification()
-            //handleEvent(forRegion: region, enter: true)
+            handleEvent(forRegion: region, enter: true)
         default:
             break
         }
