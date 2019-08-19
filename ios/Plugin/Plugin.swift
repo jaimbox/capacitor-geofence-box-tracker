@@ -47,7 +47,7 @@ public class GeofenceTracker: CAPPlugin {
         }
         let radius = call.get("radius", Double.self) ?? 50
         
-        let region = GeofenceManager.shared.geofenceRegion(lat: lat, lng: lng, radius: radius, identifier: identifer)
+        let region = GeofenceManager.shared.geofenceRegion(lat: lat, lng: lng, radius: radius, identifier: identifer, plugin: self)
         GeofenceManager.shared.startMonitoring(region: region)
             ? call.success()
             : call.error("Could not start monitoring the region.")

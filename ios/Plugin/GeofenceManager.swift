@@ -9,10 +9,13 @@
 import Foundation
 import CoreLocation
 import UserNotifications
+import Capacitor
 
 class GeofenceManager: NSObject, UNUserNotificationCenterDelegate {
     
     // Singleton instance
+    var plugin: GeofenceTracker? = nil
+    
     static let shared = GeofenceManager()
     
     private var locationManager: CLLocationManager!
@@ -78,7 +81,8 @@ class GeofenceManager: NSObject, UNUserNotificationCenterDelegate {
      - radius: The radius of the circle.
      - identifier: A string to identify the circle.
      */
-    func geofenceRegion(lat: Double, lng: Double, radius: Double = 50, identifier: String) -> CLCircularRegion {
+    func geofenceRegion(lat: Double, lng: Double, radius: Double = 50, identifier: String, plugin: GeofenceTracker) -> CLCircularRegion {
+        self.plugin = plugin
         let center = CLLocationCoordinate2D(latitude: lat, longitude: lng)
         let region = CLCircularRegion(center: center, radius: radius, identifier: identifier)
         region.notifyOnEntry = notifyOnEntry
@@ -142,10 +146,10 @@ class GeofenceManager: NSObject, UNUserNotificationCenterDelegate {
      - enter: A Boolean value indicating whether the user entered(true) or left(false) the region.
      */
     
-    private func handleEvent(forRegion region: CLRegion, enter: Bool) -> String {
+    private func handleEvent(forRegion region: CLRegion, enter: Bool) {
         let identifer = region.identifier
         
-        return identifer
+        self.plugin?.notifyListeners("onTransitionReceived", data: ["identifer" : identifer, "enter": enter ])
     }
     
     func notification(forRegion region: CLRegion, enter: Bool) {
